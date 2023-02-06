@@ -1,0 +1,29 @@
+# from https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+[project.scripts]
+python-ini = "python_ini.help:main"
+[tool.setuptools.packages.find]
+include = ["python_ini*"]
+namespaces = false
+[project]
+name = "python-ini"
+version = "0.0.1"
+license = {text = "BSD 2-Clause License"}
+dependencies = ["apg-py"]
+authors = [
+  { name="Lowell Thomas", email="ldt@sabnf.com" },
+]
+description = "A simple to use yet very flexible INI file parser."
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/ldthomas/python-ini"
+"Bug Tracker" = "https://github.com/ldthomas/python-ini/issues"
