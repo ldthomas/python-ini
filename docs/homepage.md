@@ -1,4 +1,4 @@
-# python-ini - A Python INI File Parser and Writer
+# python-ini - A Python INI File Parser
 
 [**Introduction**](#id_introduction)<br>
 [**GitHub Installation**](#id_installation)<br>
