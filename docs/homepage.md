@@ -299,10 +299,10 @@ for key in keys:
 sections = ini.get_sections()                   # get a list of all section names
 for section in sections:
     keys = ini.get_section_keys(section)        # get a list of all keys in each section
-        for key in keys:
-            values = ini.get_section_values(section, key)   # get the value for each section key
-            print('[' + section + ']:' + key, end=' ')
-            print(values)
+    for key in keys:
+        values = ini.get_section_values(section, key)   # get the value for each section key
+        print('[' + section + ']:' + key, end=' ')
+        print(values)
 ```
 
 See the constructor and member functions, python_ini.ini_file.IniFile, for detailed descriptions of options and usage.

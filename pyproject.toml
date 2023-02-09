@@ -9,7 +9,7 @@ include = ["python_ini*"]
 namespaces = false
 [project]
 name = "python-ini"
-version = "1.0.0"
+version = "1.0.1"
 license = {text = "BSD 2-Clause License"}
 dependencies = ["apg-py"]
 authors = [
