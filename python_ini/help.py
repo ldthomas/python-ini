@@ -23,7 +23,7 @@ ep = '''NOTES: ???
 '''
 
 how_to = '''usage: implemented as a Python class with member functions to parse and retrieve key values
-See the full documentation at https://sabnf.com/docs/ini/index.html for complete details.
+See the full documentation at https://sabnf.com/docs/python-ini/index.html for complete details.
 A simple Python program illustrating the basics follows.
 
 from python_ini.ini_file import IniFile
