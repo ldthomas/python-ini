@@ -60,22 +60,6 @@ class IniWriter:
         self.__value_delim = self.__VALUE_DELIM_COMMA
         self.__comment_tab = self.__COMMENT_TAB
 
-    def __normalize_comment(self, comment):
-        if(comment is None):
-            return None
-        if(not isinstance(comment, str)):
-            raise Exception(
-                'IniWriter: invalid comment, must be string of ASCII characters 32-126', comment)
-        elif(comment == '' or comment.isspace()):
-            return ''
-        for s in comment:
-            c = ord(s)
-            if(c >= 32 and c <= 126):
-                continue
-            raise Exception(
-                'IniWriter: invalid character in comment - char code(' + str(c) + ')')
-        return comment
-
     def __validate_name(self, name):
         if(not isinstance(name, str)):
             return False
@@ -94,48 +78,21 @@ class IniWriter:
             return False
         return True
 
-    def comment_tab(self, tab=None):
-        if(tab is None):
-            self.__comment_tab = self.__COMMENT_TAB
-            return
-        if(not isinstance(tab, int) or (int < 0)):
+    def __normalize_comment(self, comment):
+        if(comment is None):
+            return None
+        if(not isinstance(comment, str)):
             raise Exception(
-                'IniWriter.comment_tab(): argument positive integer', tab)
-        self.__comment_tab = tab
-
-    def comment_delim(self, delim=';'):
-        if(delim == ';'):
-            self.__comment_delim = self.__COMMENT_DELIM_SEMI
-        elif(delim == '#'):
-            self.__comment_delim = self.__COMMENT_DELIM_HASH
-        else:
+                'IniWriter: invalid comment, must be string of ASCII characters 32-126', comment)
+        elif(comment == '' or comment.isspace()):
+            return ''
+        for s in comment:
+            c = ord(s)
+            if(c >= 32 and c <= 126):
+                continue
             raise Exception(
-                'IniWriter.comment_delim(): argument must be semicolon(;) or hash(#)', delim)
-
-    def key_delim(self, delim='='):
-        if(delim == '='):
-            self.__key_delim = self.__KEY_DELIM_EQUALS
-        elif(delim == ':'):
-            self.__key_delim = self.__KEY_DELIM_COLON
-        elif(delim.isspace()):
-            self.__key_delim = self.__KEY_DELIM_SPACE
-        else:
-            raise Exception(
-                'IniWriter.key_delim(): argument must be equals(=), comma(,) or space', delim)
-
-    def value_delim(self, delim=','):
-        if(delim == ','):
-            self.__value_delim = self.__VALUE_DELIM_COMMA
-        elif(delim.isspace()):
-            self.__value_delim = self.__VALUE_DELIM_SPACE
-        else:
-            raise Exception(
-                'IniWriter.value_delim(): argument must be comma(,) or space', delim)
-
-    def section(self, name, comment=None):
-        self.__validate_name(name)
-        self.__lines.append(
-            [self.__SECTION, name, self.__normalize_comment(comment)])
+                'IniWriter: invalid character in comment - char code(' + str(c) + ')')
+        return comment
 
     def __normalize_string(self, string):
         v = ''
@@ -173,6 +130,48 @@ class IniWriter:
                 raise Exception(
                     'IniWriter: string has invalid characters', string)
         return "'" + v + "'"
+
+    def comment_tab(self, tab=None):
+        if(tab is None):
+            self.__comment_tab = self.__COMMENT_TAB
+            return
+        if(not isinstance(tab, int) or (int < 0)):
+            raise Exception(
+                'IniWriter.comment_tab(): argument positive integer', tab)
+        self.__comment_tab = tab
+
+    def delimiters(self, comment=None, key=None, value=None):
+        if(comment):
+            if(comment == ';'):
+                self.__comment_delim = self.__COMMENT_DELIM_SEMI
+            elif(comment == '#'):
+                self.__comment_delim = self.__COMMENT_DELIM_HASH
+            else:
+                raise Exception(
+                    'IniWriter.comment_delimiters(): comment argument must be semicolon(;) or hash(#)', comment)
+        if(key):
+            if(key == '='):
+                self.__key_delim = self.__KEY_DELIM_EQUALS
+            elif(key == ':'):
+                self.__key_delim = self.__KEY_DELIM_COLON
+            elif(key.isspace()):
+                self.__key_delim = self.__KEY_DELIM_SPACE
+            else:
+                raise Exception(
+                    'IniWriter.key_delimiters(): key argument must be equals(=), comma(,) or space', key)
+        if(value):
+            if(value == ','):
+                self.__value_delim = self.__VALUE_DELIM_COMMA
+            elif(value.isspace()):
+                self.__value_delim = self.__VALUE_DELIM_SPACE
+            else:
+                raise Exception(
+                    'IniWriter.value_delimiters(): value argument must be comma(,) or space', value)
+
+    def section(self, name, comment=None):
+        self.__validate_name(name)
+        self.__lines.append(
+            [self.__SECTION, name, self.__normalize_comment(comment)])
 
     def key(self, name, varg, comment=None):
         self.__validate_name(name)
