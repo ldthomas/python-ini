@@ -21,18 +21,6 @@ sys.path.append(os.getcwd())
 # python3 apg-py -i python_ini/grammar.abnf
 
 
-def indent(n):
-    out = ''
-    if(n < 0):
-        n = -n
-    if(n > 120):
-        n = 120
-    while(n):
-        out += ' '
-        n -= 1
-    return out
-
-
 class IniWriter:
 
     def __init__(self):
@@ -42,6 +30,9 @@ class IniWriter:
         self.__SECTION = 0
         self.__KEY = 1
         self.__COMMENT = 2
+        self.__TRUE = 'true'
+        self.__FALSE = 'false'
+        self.__NONE = 'none'
         self.__COMMENT_DELIM_SEMI = '; '
         self.__COMMENT_DELIM_HASH = '# '
         self.__COMMENT_TAB = 40
@@ -59,6 +50,9 @@ class IniWriter:
         self.__key_delim = self.__KEY_DELIM_EQUALS
         self.__value_delim = self.__VALUE_DELIM_COMMA
         self.__comment_tab = self.__COMMENT_TAB
+        self.__true = self.__TRUE
+        self.__false = self.__FALSE
+        self.__none = self.__NONE
 
     def __validate_name(self, name):
         if(not isinstance(name, str)):
@@ -131,16 +125,42 @@ class IniWriter:
                     'IniWriter: string has invalid characters', string)
         return "'" + v + "'"
 
+    def booleans(self, true=False, false=False, none=False):
+        if(true):
+            l = true.lower()
+            if(l == 'true' or l == 'yes' or l == 'on'):
+                self.__true = true
+            else:
+                raise Exception(
+                    'IniWriter.booleans(): true argument must be one of "true", "yes" or "on", case insensitive',
+                    true)
+        if(false):
+            l = false.lower()
+            if(l == 'false' or l == 'no' or l == 'off'):
+                self.__false = false
+            else:
+                raise Exception(
+                    'IniWriter.booleans(): false argument must be one of "false", "no" or "off", case insensitive',
+                    false)
+        if(none):
+            l = none.lower()
+            if(l == 'none' or l == 'null' or l == 'void'):
+                self.__none = none
+            else:
+                raise Exception(
+                    'IniWriter.booleans(): none argument must be one of "none", "null" or "void", case insensitive',
+                    none)
+
     def comment_tab(self, tab=None):
         if(tab is None):
             self.__comment_tab = self.__COMMENT_TAB
-            return
-        if(not isinstance(tab, int) or (int < 0)):
+        elif(isinstance(tab, int) and (tab >= 0)):
+            self.__comment_tab = tab
+        else:
             raise Exception(
                 'IniWriter.comment_tab(): argument positive integer', tab)
-        self.__comment_tab = tab
 
-    def delimiters(self, comment=None, key=None, value=None):
+    def delimiters(self, comment=False, key=False, value=False):
         if(comment):
             if(comment == ';'):
                 self.__comment_delim = self.__COMMENT_DELIM_SEMI
@@ -182,11 +202,11 @@ class IniWriter:
         vlist = []
         for value in values:
             if(value == True):
-                v = 'true'
+                v = self.__true
             elif(value == False):
-                v = 'false'
+                v = self.__false
             elif(value is None):
-                v = 'none'
+                v = self.__none
             elif(isinstance(value, int) or isinstance(value, float)):
                 v = str(value)
             elif(isinstance(value, str)):
@@ -209,25 +229,49 @@ class IniWriter:
 # section line  = [id, name, comment]
 # comment line  = [id, comment]
     def to_string(self):
+
+        def indent(n):
+            out = ''
+            while(n):
+                out += ' '
+                n -= 1
+            return out
+
+        def add_comment(out, comment):
+            lout = len(out)
+            if(not comment):
+                add = self.__LINE_END
+            elif(lout >= self.__comment_tab):
+                add = self.__LINE_END
+                add += indent(self.__comment_tab)
+                add += self.__comment_delim + comment
+                add += self.__LINE_END
+            else:
+                add = indent(self.__comment_tab - lout)
+                add += self.__comment_delim + comment
+                add += self.__LINE_END
+            return add
+
         out = ''
         for line in self.__lines:
             if(line[0] == self.__COMMENT):
                 if(line[1] == ''):
-                    out += '\n'
+                    out += self.__LINE_END
                 else:
                     if(line[1] is None):
                         out += self.__LINE_END
                     else:
                         out += self.__comment_delim + line[1] + self.__LINE_END
             elif(line[0] == self.__KEY):
-                out += line[1] + self.__key_delim
+                out_line = line[1] + self.__key_delim
                 count = 0
                 for v in line[2]:
                     if(count > 0):
-                        out += self.__value_delim
-                    out += v
+                        out_line += self.__value_delim
+                    out_line += v
                     count += 1
-                out += self.__LINE_END
+                out += out_line + add_comment(out_line, line[3])
             else:
-                out += '[' + line[1] + ']' + self.__LINE_END
+                out_line = '[' + line[1] + ']'
+                out += out_line + add_comment(out_line, line[2])
         return out
