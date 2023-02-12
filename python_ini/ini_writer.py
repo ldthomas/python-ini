@@ -114,6 +114,9 @@ class IniWriter:
                 while(len(h) < 4):
                     h = '0' + h
                 v += '\\u' + h
+            elif(c >= 0xd800 and c < 0xe000):
+                raise Exception(
+                    'IniWriter: string has Unicode surrogate value', string)
             elif(c <= 0x10ffff):
                 h = str(hex(c))
                 h = h[2:]
@@ -121,8 +124,9 @@ class IniWriter:
                     h = '0' + h
                 v += '\\U' + h
             else:
+                # Note: will probably never get here
                 raise Exception(
-                    'IniWriter: string has invalid characters', string)
+                    'IniWriter: string has Unicode value out of range (>0x10FFFF)', string)
         return "'" + v + "'"
 
     def booleans(self, true=False, false=False, none=False):
@@ -158,7 +162,7 @@ class IniWriter:
             self.__comment_tab = tab
         else:
             raise Exception(
-                'IniWriter.comment_tab(): argument positive integer', tab)
+                'IniWriter.comment_tab(): argument must be positive integer', tab)
 
     def delimiters(self, comment=False, key=False, value=False):
         if(comment):
