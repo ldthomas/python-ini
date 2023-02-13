@@ -151,6 +151,19 @@ class TestConfig(unittest.TestCase):
         # print(file)
         self.assertIn('\n; all key chars', file)
 
+    def test_write(self):
+        '''Test writing to a file.'''
+        fname = 'tests/data/temp.ini'
+        w = IniWriter()
+        ini = IniFile('m')
+        make_ini(w)
+        w.write(fname)
+        # print()
+        # print(file)
+        ini.parse(fname)
+        self.assertEqual(ini.errors, None)
+        os.remove(fname)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,30 +1,23 @@
 ''' @file python_ini/ini_writer.py
 @brief The IniWriter class for creating and writing an INI file.
-'''
-import sys
-import os
-import copy
-# add the current working directory to the path
-# DO NOT MOVE THE FOLLOWING STATEMENT
-# if using autopep8 formatter, for example, set argument '--ignore=E402'
-sys.path.append(os.getcwd())
-# from apg_py.lib import utilities as utils
-# from apg_py.lib.parser import Parser
-# from apg_py.lib.trace import Trace
-# from apg_py.lib.ast import Ast
-# import python_ini.grammar as grammar
-# import python_ini.parser_callbacks as pcb
-# import python_ini.ast_callbacks as acb
 
-# Note: The SABNF syntax for the ini file parser is in grammar.abnf.
-# The grammar object, grammar.py was generated with (assuming PyPI installation of apg-py)
-# python3 apg-py -i python_ini/grammar.abnf
+The writer is configurable to specify optional delimiters, boolean values
+and tab space for inline comments.
+'''
 
 
 class IniWriter:
 
     def __init__(self):
         '''Ini file writer constructor.
+        Note that configurable values are set to defaults.
+            - True = 'true'
+            - False = 'false'
+            - None = 'none'
+            - ; for comment delimiter
+            - = for key/value delimiter
+            - , for value list delimiter
+            - column 40 for tab to inline comments
         '''
 
         self.__SECTION = 0
@@ -47,6 +40,7 @@ class IniWriter:
         self.clear()
 
     def clear(self):
+        '''Initialize or reset the writer to its constructor defaults.'''
         self.errors = []
         self.__lines = []
         self.__comment_delim = self.__COMMENT_DELIM_SEMI
@@ -133,6 +127,12 @@ class IniWriter:
         return "'" + v + "'"
 
     def booleans(self, true=False, false=False, none=False):
+        '''Sets the values to specify for boolean (and null) values.
+        @param true If specified must be one of 'true', 'yes' or 'on', all case insensitive.
+        @param false If specified must be one of 'false', 'no' or 'off', all case insensitive.
+        @param none If specified must be one of 'none', 'null' or 'void', all case insensitive.
+        @return Raises Exception on any parameter error.
+        '''
         if(true):
             l = true.lower()
             if(l == 'true' or l == 'yes' or l == 'on'):
@@ -159,6 +159,11 @@ class IniWriter:
                     none)
 
     def comment_tab(self, tab=None):
+        '''Sets the column value for the tab to inline comments.
+        @param tab The column value to begin inline comments.
+        Must be an integer tab >= 0.
+        @return Raises Exception on invalid tab value.
+        '''
         if(tab is None):
             self.__comment_tab = self.__COMMENT_TAB
         elif(isinstance(tab, int) and (tab >= 0)):
@@ -168,6 +173,12 @@ class IniWriter:
                 'IniWriter.comment_tab(): argument must be positive integer', tab)
 
     def delimiters(self, comment=False, key=False, value=False):
+        '''Sets the delimeter values.
+        @param comment The comment delimiter. Must be semicolon(;) or hash(#).
+        @param key The key/value delimiter. Must be equals(=), colon(:) or space.
+        @param value The delimiter between multiple key values. Must be comma(,) or space.
+        @return Raises Exception on invalid argument values.
+        '''
         if(comment):
             if(comment == ';'):
                 self.__comment_delim = self.__COMMENT_DELIM_SEMI
@@ -196,11 +207,31 @@ class IniWriter:
                     'IniWriter.value_delimiters(): value argument must be comma(,) or space', value)
 
     def section(self, name, comment=None):
+        '''Add a section line to the INI file.
+        @param name The section name. Must be one or more characters from the set
+            - a-zA-Z0-9!$%()*+-.<>?@^_{|}~
+        @param comment An inline comment to add to the section name line.
+        @returns Raises Exception on invalid name or comment.
+        '''
         self.__validate_name(name)
         self.__lines.append(
             [self.__SECTION, name, self.__normalize_comment(comment)])
 
     def key(self, name, varg, comment=None):
+        '''Add a key/value line to the INI file.
+        @param name The key name. Must be one or more characters from the set
+            - a-zA-Z0-9!$%()*+-.<>?@^_{|}~
+        @param varg The value for the key. May be a single value or a list of values.
+        Valid values are:
+            - True
+            - False
+            - None
+            - integer, positive or negative
+            - floating point number, positive or negative
+            - string
+        @param comment An inline comment to add to the key/value line.
+        @returns Raises Exception on invalid name, value or comment.
+        '''
         self.__validate_name(name)
         if(isinstance(varg, list)):
             values = varg
@@ -225,17 +256,21 @@ class IniWriter:
             [self.__KEY, name, vlist, self.__normalize_comment(comment)])
 
     def comment(self, comment=None):
+        '''Add a comment line to the INI file.
+        @param comment A comment string. Valid comments are:
+            - None (default) adds a blank line
+            - ' ' empty or all white space string adds a blank line
+            - string of printing ASCII characters only, char codes 32-126
+        @returns Raises Exception on invalid ncomment.
+        '''
         self.__lines.append(
             [self.__COMMENT, self.__normalize_comment(comment)])
 
-    def write(self, fname):
-        with open(fname, 'r') as fd:
-            fd.write(self.to_string())
-
-# key line      = [id, name, value, comment]
-# section line  = [id, name, comment]
-# comment line  = [id, comment]
     def to_string(self):
+        '''Convert all lines added with the section(), key() and comment() functions
+        to a valid, formatted INI file.
+        @returns The formatted INI file as a string.
+        '''
 
         def indent(n):
             out = ''
@@ -259,6 +294,9 @@ class IniWriter:
                 add += self.__LINE_END
             return add
 
+        # key line      = [id, name, value, comment]
+        # section line  = [id, name, comment]
+        # comment line  = [id, comment]
         out = ''
         for line in self.__lines:
             if(line[0] == self.__COMMENT):
@@ -282,3 +320,11 @@ class IniWriter:
                 out_line = '[' + line[1] + ']'
                 out += out_line + add_comment(out_line, line[2])
         return out
+
+    def write(self, fname):
+        '''Write the formatted INI file to a file. Calls to_string().
+        @param fname The file name to write the INI file to.
+        @return Raises exceptions on file open or write errors.
+        '''
+        with open(fname, 'w') as fd:
+            fd.write(self.to_string())
