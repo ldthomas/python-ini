@@ -44,6 +44,9 @@ class IniWriter:
         self.__VALUE_DELIM_SPACE = ' '
         self.__NAME_CHARS = [33, 36, 37, 38, 40, 41, 42, 43, 45,
                              46, 60, 62, 63, 64, 94, 95, 123, 124, 125, 126]
+        self.clear()
+
+    def clear(self):
         self.errors = []
         self.__lines = []
         self.__comment_delim = self.__COMMENT_DELIM_SEMI
@@ -205,9 +208,9 @@ class IniWriter:
             values = [varg]
         vlist = []
         for value in values:
-            if(value == True):
+            if(value is True):
                 v = self.__true
-            elif(value == False):
+            elif(value is False):
                 v = self.__false
             elif(value is None):
                 v = self.__none
