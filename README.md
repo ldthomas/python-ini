@@ -127,10 +127,10 @@ or
 
 A quick start guides:
 
--   [GitHub INI parser(https://github.com/ldthomas/python-ini/blob/main/docs/quick_github.md)
--   [GitHub INI writer(https://github.com/ldthomas/python-ini/blob/main/docs/quick_git_writer.md)
--   [PyPI INI parser(https://github.com/ldthomas/python-ini/blob/main/docs/quick_pip.md)
--   [PyPI INI writer(https://github.com/ldthomas/python-ini/blob/main/docs/quick_pip_writer.md)
+-   [GitHub INI parser](https://github.com/ldthomas/python-ini/blob/main/docs/quick_github.md)
+-   [GitHub INI writer](https://github.com/ldthomas/python-ini/blob/main/docs/quick_git_writer.md)
+-   [PyPI INI parser](https://github.com/ldthomas/python-ini/blob/main/docs/quick_pip.md)
+-   [PyPI INI writer](https://github.com/ldthomas/python-ini/blob/main/docs/quick_pip_writer.md)
 
 ## Documentation
 
