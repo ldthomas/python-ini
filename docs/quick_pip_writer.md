@@ -20,38 +20,34 @@ The content of the files will be presented and explained as we go.
 pip install python-ini
 ```
 
-### The Creat, Print and Write an INI file
+### Create, Print and Write an INI file
 
 The code , `write.py` could look somthing like this.
 
 ```python
+import os
 from python_ini.ini_writer import IniWriter
 from python_ini.ini_file import IniFile
-w = IniWriter('m')
+w = IniWriter()
 
 # set all configurable values
 w.delimiters('#', ':', ',')
 w.booleans('TRUE', 'OFF', 'void')
 w.comment_tab(30)
 
-# define some global keys
+# global keys
 w.comment()
 w.comment('global keys')
-w.key('key0', 'a\U0010ffffb', 'max Unicode character')
-w.key('key1', 1, 'key1 comment')
-w.key('key2', True)
-w.key('key4', False)
-w.key('key5', None)
-w.key('key3', 'true')
+w.key('Unicode', 'a\U0010ffffb', 'max Unicode character')
+w.key('flags', [True, False, None], 'all "booleans"')
 
-# define some section keys
+# section keys
 w.comment()
 w.comment('first section')
 w.section('__SECTION__', 'this is a section')
-w.key('section_key1', [1, 2, 3])
-w.key('section_key2', ['true', True, 1e12])
+w.key('section_key', [1, 2, 3])
 w.key(
-    'section_key3',
+    'long-key',
     ['abc\xffdef\ue000ghi\U0010ffffjkl'],
     'hex and Unicode string characters')
 
@@ -83,18 +79,13 @@ You should see the results:
 ```
 
 # global keys
-key0: 'a\U0010ffffb'          # max Unicode character
-key1: 1                       # key1 comment
-key2: TRUE
-key4: OFF
-key5: void
-key3: 'true'
+Unicode: 'a\U0010ffffb'       # max Unicode character
+flags: TRUE, OFF, void        # all "booleans"
 
 # first section
 [__SECTION__]                 # this is a section
-section_key1: 1, 2, 3
-section_key2: 'true', TRUE, 1000000000000.0
-section_key3: 'abc\xffdef\ue000ghi\U0010ffffjkl'
+section_key: 1, 2, 3
+long-value: 'abc\xffdef\ue000ghi\U0010ffffjkl'
                               # hex and Unicode string characters
 
 INI file output.ini parsed without errors

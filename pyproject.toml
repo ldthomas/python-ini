@@ -9,13 +9,13 @@ include = ["python_ini*"]
 namespaces = false
 [project]
 name = "python-ini"
-version = "1.0.3"
+version = "1.1.0"
 license = {text = "BSD 2-Clause License"}
 dependencies = ["apg-py"]
 authors = [
   { name="Lowell Thomas", email="ldt@sabnf.com" },
 ]
-description = "A simple to use yet very flexible INI file parser."
+description = "A simple to use yet very flexible INI file parser and writer."
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [

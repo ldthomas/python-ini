@@ -1,10 +1,11 @@
-# python-ini - A Python INI File Parser
+# A Python INI File Parser and Writer
 
 [**Introduction**](#id_introduction)<br>
 [**GitHub Installation**](#id_installation)<br>
 [**PyPi Installation**](#id_pypi)<br>
 [**INI File Syntax**](#id_syntax)<br>
 [**Parser Usage**](#id_usage)<br>
+[**Writer Usage**](#id_writer)<br>
 [**License**](#id_license)
 
 ### Introduction {#id_introduction}
@@ -58,7 +59,7 @@ Unit tests are in the `tests` directory. Run
 python3 -m unittest discover
 ```
 
-which should indicate something like 28 successful tests.
+which should indicate something like 42 successful tests.
 
 There is also a set of examples demonstrating most aspects
 of using python-ini in the `examples` directory.
@@ -69,10 +70,14 @@ python3 examples/basic.py
 python3 examples/all_options.py
 python3 examples/defaults.py
 python3 examples/multi_values.py
+python3 examples/writer.py
 ```
 
-See this [quick start](docs/quick_github.md) guide for using `python-ini` in your project
-using the GitHub installation.
+See these quick start guides for using using
+the GitHub installation of `python-ini` in your project.
+
+-   [parser](docs/quick_github.md)
+-   [writer](docs/quick_git_writer.md)
 
 ### PyPi Installations {#id_pypi}
 
@@ -86,8 +91,11 @@ python-ini --help
 This will install `python-ini` and the CLI stand-alone help function
 but none of the tests or examples that are available from the GitHub installation.
 
-See this [quick start](docs/quick_pip.md) guide for using `python-ini` in
-your project with the `pip` installation.
+See these quick start guides for using using
+the `pip` installation of `python-ini` in your project.
+
+-   [parser](docs/quick_pip.md)
+-   [writer](docs/quick_pip_writer.md)
 
 ### INI File Syntax {#id_syntax}
 
@@ -312,6 +320,57 @@ See the constructor and member functions, python_ini.ini_file.IniFile, for detai
 Note that the parser is designed to report errors in the INI file syntax without halting.
 That is, the parser should never fail. It should collect all syntacticly correct
 section, key values and report errors for any file lines that are syntacticly incorrect.
+
+### Writer Usage {#id_writer}
+
+Implemented with a single class with functions to write comments, key/value pairs and sections, it is easy to use
+with a short learning curve. For example, this simple program would configure all defaults and write a short INI file.
+
+```python
+from python_ini.ini_file import IniFile
+w = IniWriter()
+
+# set all configurable values
+w.delimiters('#', ':', ',')
+w.booleans('TRUE', 'OFF', 'void')
+w.comment_tab(30)
+
+# global keys
+w.comment()
+w.comment('global keys')
+w.key('Unicode', 'a\U0010ffffb', 'max Unicode character')
+w.key('flags', [True, False, None], 'all "booleans"')
+
+# section keys
+w.comment()
+w.comment('first section')
+w.section('__SECTION__', 'this is a section')
+w.key('section_key', [1, 2, 3])
+w.key(
+    'long-key',
+    ['abc\xffdef\ue000ghi\U0010ffffjkl'],
+    'hex and Unicode string characters')
+
+# write the formatted INI file
+w.write('output.ini)
+```
+
+The file `output.ini` would look like this:
+
+```
+
+# global keys
+Unicode: 'a\U0010ffffb'       # max Unicode character
+flags: TRUE, OFF, void        # all "booleans"
+
+# first section
+[__SECTION__]                 # this is a section
+section_key: 1, 2, 3
+long-value: 'abc\xffdef\ue000ghi\U0010ffffjkl'
+                              # hex and Unicode string characters
+```
+
+See the IniWriter class, python_ini.ini_writer.IniWriter, for the details.
 
 ### License {#id_license}
 

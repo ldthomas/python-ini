@@ -1,4 +1,6 @@
-# A Python INI File Parser
+# A Python INI File Parser and Writer
+
+## The INI File Parser
 
 This INI file parser is simple and easy to use and yet
 it retains most of the stable and varying features
@@ -49,20 +51,88 @@ for section in sections:
             print(values)
 ```
 
-### Installation
+## The INI File Writer
 
-The Python INI file parser can be installed from either
+The writer is implemented with a simple three functions to write:
+
+-   comment lines
+-   key/value lines
+-   section name lines
+
+For overriding the default values there are three functions for setting some options:
+
+-   delimiters
+    -   comment delimiters semicolon(;) or hash(#)
+    -   key/value delimiters equals(=), colon(:) or space
+    -   value list delimiters comma(,) or space
+-   booleans
+    -   True: true, yes, on (all case insensitive)
+    -   False: false, no, off (all case insensitive)
+    -   None: none, null, void (all case insensitive)
+-   the comment tab - key and section lines may have an optional comment
+    which is tabbed on the same line. If the line is longer than the tab column
+    the comment is tabbed on the following line.
+
+The following simple program:
+
+```python
+from python_ini.ini_writer import IniWriter
+w = IniWriter()
+
+# set all configurable values
+w.delimiters('#', ':', ',')
+w.booleans('TRUE', 'OFF', 'void')
+w.comment_tab(30)
+
+# global keys
+w.comment()
+w.comment('global keys')
+w.key('Unicode', 'a\U0010ffffb', 'max Unicode character')
+w.key('flags', [True, False, None], 'all "booleans"')
+
+# section keys
+w.comment()
+w.comment('first section')
+w.section('__SECTION__', 'this is a section')
+w.key('section_key', [1, 2, 3])
+w.key(
+    'long-value',
+    ['abc\xffdef\ue000ghi\U0010ffffjkl'],
+    'hex and Unicode string characters')
+
+# print the formatted INI file
+w.write('output.ini')
+```
+
+would write the following INI file to 'output.ini'.
+
+```
+# global keys
+Unicode: 'a\U0010ffffb'       # max Unicode character
+flags: TRUE, OFF, void        # all "booleans"
+
+# first section
+[__SECTION__]                 # this is a section
+section_key: 1, 2, 3
+long-value: 'abc\xffdef\ue000ghi\U0010ffffjkl'
+                              # hex and Unicode string characters
+```
+
+## Installation
+
+The Python INI file parser and writer can be installed from either
 [Github](https://github.com/ldthomas/python-ini)
 or
 [PyPI](https://pypi.org/project/python-ini/)
 
-A quick start guide using the GitHub installation can be found
-[**here**](https://github.com/ldthomas/python-ini/blob/main/docs/quick_github.md).
+A quick start guides:
 
-A quick start guide using the PyPI installation can be found
-[**here**](https://github.com/ldthomas/python-ini/blob/main/docs/quick_pip.md).
+-   [GitHub INI parser(https://github.com/ldthomas/python-ini/blob/main/docs/quick_github.md)
+-   [GitHub INI writer(https://github.com/ldthomas/python-ini/blob/main/docs/quick_git_writer.md)
+-   [PyPI INI parser(https://github.com/ldthomas/python-ini/blob/main/docs/quick_pip.md)
+-   [PyPI INI writer(https://github.com/ldthomas/python-ini/blob/main/docs/quick_pip_writer.md)
 
-### Documentation
+## Documentation
 
 The full documentation is in the code and in additional documentation files.
 It can be generated

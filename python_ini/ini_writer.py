@@ -174,9 +174,9 @@ class IniWriter:
 
     def delimiters(self, comment=False, key=False, value=False):
         '''Sets the delimeter values.
-        @param comment The comment delimiter. Must be semicolon(;) or hash(#).
-        @param key The key/value delimiter. Must be equals(=), colon(:) or space.
-        @param value The delimiter between multiple key values. Must be comma(,) or space.
+        @param comment The comment delimiter. Must be semicolon(";") or hash("#").
+        @param key The key/value delimiter. Must be equals("="), colon(":") or space.
+        @param value The delimiter between multiple key values. Must be comma(",") or space.
         @return Raises Exception on invalid argument values.
         '''
         if(comment):
@@ -186,7 +186,7 @@ class IniWriter:
                 self.__comment_delim = self.__COMMENT_DELIM_HASH
             else:
                 raise Exception(
-                    'IniWriter.comment_delimiters(): comment argument must be semicolon(;) or hash(#)', comment)
+                    'IniWriter.comment_delimiters(): comment argument must be semicolon(":") or hash("#")', comment)
         if(key):
             if(key == '='):
                 self.__key_delim = self.__KEY_DELIM_EQUALS
