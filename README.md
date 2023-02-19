@@ -125,7 +125,7 @@ The Python INI file parser and writer can be installed from either
 or
 [PyPI](https://pypi.org/project/python-ini/)
 
-A quick start guides:
+Quick start guides:
 
 -   [GitHub INI parser](https://github.com/ldthomas/python-ini/blob/main/docs/quick_github.md)
 -   [GitHub INI writer](https://github.com/ldthomas/python-ini/blob/main/docs/quick_git_writer.md)
