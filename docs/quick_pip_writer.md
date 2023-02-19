@@ -27,14 +27,14 @@ The code , `write.py` could look somthing like this.
 ```python
 from python_ini.ini_writer import IniWriter
 from python_ini.ini_file import IniFile
+w = IniWriter('m')
 
 # set all configurable values
-w = IniWriter()
 w.delimiters('#', ':', ',')
 w.booleans('TRUE', 'OFF', 'void')
 w.comment_tab(30)
 
-# the global keys
+# define some global keys
 w.comment()
 w.comment('global keys')
 w.key('key0', 'a\U0010ffffb', 'max Unicode character')
@@ -44,7 +44,7 @@ w.key('key4', False)
 w.key('key5', None)
 w.key('key3', 'true')
 
-# section keys
+# define some section keys
 w.comment()
 w.comment('first section')
 w.section('__SECTION__', 'this is a section')
@@ -56,8 +56,7 @@ w.key(
     'hex and Unicode string characters')
 
 # print the formatted INI file
-s = w.to_string()
-print(s)
+print(w.to_string())
 
 # write the formatted INI file, parse it and remove it
 fname = 'output.ini'
@@ -70,6 +69,7 @@ if(ini.errors):
 else:
     print('INI file ' + fname + ' parsed without errors')
 os.remove(fname)
+print('INI file ' + fname + ' removed')
 ```
 
 Execute the command:
