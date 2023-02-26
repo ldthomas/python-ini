@@ -327,7 +327,7 @@ Implemented with a single class with functions to write comments, key/value pair
 with a short learning curve. For example, this simple program would configure all defaults and write a short INI file.
 
 ```python
-from python_ini.ini_file import IniFile
+from python_ini.ini_writer import IniWriter
 w = IniWriter()
 
 # set all configurable values
